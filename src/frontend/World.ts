@@ -1,6 +1,6 @@
 'use strict';
 
-import State from './states/State.js';
+import { State } from './states/State.js';
 
 class World {
 
@@ -23,3 +23,5 @@ class World {
     }
 
 }
+
+export default World;

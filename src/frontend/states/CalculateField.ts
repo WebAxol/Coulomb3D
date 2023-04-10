@@ -1,18 +1,11 @@
 'use strict';
 
-import State from "./State";
+import { State } from "./State.js";
 
-// import Linked States
-
-//
 
 class CalculateField extends State {
     
-    constructor(){
-        super();
-    }
-
-    execute(){
+     execute(){
         return true;
     };
 

@@ -1,11 +1,20 @@
 'use strict';
 
+interface TransitionHash {
+    [key : string] : State
+}
+
 class State {
     
-    public transitions;
+    public transitions : TransitionHash;
 
     constructor(){
         this.transitions = {};
+    }
+
+    setUp(transitions : TransitionHash){
+        
+        this.transitions = transitions;
     }
 
     execute(){
@@ -14,4 +23,4 @@ class State {
 
 }
 
-export default State;
+export { TransitionHash, State };
