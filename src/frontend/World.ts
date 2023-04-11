@@ -2,26 +2,46 @@
 
 import { State } from './states/State.js';
 
-class World {
+interface WorldConfig {
 
-    private state : State;
-    private inputQueue :[];
+    states : State[];
+    initialState : State;
+}
 
-    constructor(initialState : State){
+class World { // State Machine
 
-        this.state = initialState;
-        this.inputQueue = []; 
-        this.init();
-    }   
+    private state;
+    private inputQueue :[] = [];
+    private inited : Boolean = false;
 
-    init(){
-        // Init events, etc.
+
+    init(config :WorldConfig){
+
+        if(!this.inited){
+
+            config.states.forEach((state) => { state.init(this) }); // Establish reference to World object for each state.
+            this.state = config.initialState;
+            this.inited = true;
+        }
+
+        return this;
+    }
+
+    changeState(newState){
+        this.state = newState;
+        this.execute();
     }
 
     execute(){
         this.state.execute();
     }
-
 }
 
-export default World;
+// Newly instanced States need a reference to a World object: it will be a NullWorld object by default until they are initialized.
+
+class NullWorld extends World{
+
+    execute(){ return false; }
+}
+
+export { WorldConfig, World, NullWorld };
