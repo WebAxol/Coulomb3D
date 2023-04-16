@@ -1,3 +1,5 @@
+import Plane3D from './Plane3D.js';
+
 'use strict';
 
 class Camera {
@@ -5,16 +7,15 @@ class Camera {
     public distanceToPlane : number;
     public horizontalAngle : number;
     public verticalAngle   : number;
-    public planeWidth      : number; 
-    public planeHeight     : number;
+    public plane           : Plane3D = new Plane3D(0,0,0);
 
-    constructor(){
+    constructor(distance,alpha,beta){
 
-        this.distanceToPlane = 10;
-        this.planeWidth      = 3000;
-        this.planeHeight     = 1500;
-        this.horizontalAngle = 1;
-        this.verticalAngle   = 0;
+        this.distanceToPlane = distance;
+        this.horizontalAngle = alpha;
+        this.verticalAngle   = beta;
+
+        this.plane.update(distance,alpha,beta);
     }
 
 }

@@ -6,7 +6,7 @@ import { State } from "./State.js";
 class HandleInputs extends State {
     
     execute(){
-        console.log('Handling Inputs');
+        //console.log('Handling Inputs');
         return true;
     };
 

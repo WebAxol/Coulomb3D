@@ -6,7 +6,7 @@ class Space{
     public field :Object[];
     public charges :Object;
 
-    constructor(size,pos){
+    constructor(size,pos :Vector3D){
 
         this.pos     = pos;
         this.field   = Array(size).fill(Array(size).fill(Array(size).fill(new Vector3D(0,0,0)))); // 3D Matrix
