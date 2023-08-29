@@ -5,6 +5,9 @@ import { camera, space } from "../setUp/utils.js";
 import Vector3D from '../utils/Vector3D.js';
 
 
+// TODO: fix rendering issues when plane is rotated
+// TODO: Refactor code
+
 class Render3D extends State {
     
     #canvas;
@@ -26,45 +29,32 @@ class Render3D extends State {
         let pos   = space.pos;
         let n     = field.length;
 
-        for(let x = 0; x < n * 3; x ++ ){
+        for(let x = 0; x < n; x++ ){
             for(let y = 0; y < n; y++ ){
                 for(let z = 0; z < n; z++ ){
 
-                    let o = 0;
+                    let vertex1FromOrigin = (new Vector3D(x ,y ,z )).add(pos);
+                    let vertex2FromOrigin = ((new Vector3D(x ,y ,z )).add(pos)).add(Vector3D.normalize(new Vector3D(x,y,z)).scale(0.5));
 
-                    if(!(x == o || x == 3 * (n - o ) || y == o || y == n - o || z == o || z == n -o)) continue;
 
-                    let vertexFromOrigin = (new Vector3D(x,y,z)).add(pos);
-                    let intercept = camera.plane.lineVsPlane(vertexFromOrigin);
-                    let distance = vertexFromOrigin.length();
+                    let intercept1 = camera.getProjectionCoords(vertex1FromOrigin);
+                    let intercept2 = camera.getProjectionCoords(vertex2FromOrigin);
+
+                    let distance1 = vertex1FromOrigin.length();
+                    let distance2 = vertex2FromOrigin.length();
 
                     let color = `rgba(
-                        ${Math.abs(((x * 5 + y * 1 + z * 10)) / (3*n)) * 255},
-                        ${Math.abs(((x * 1 + y * 1 + z * 5)) / (3*n)) * 255},
-                        ${Math.abs(((x * 2 + y * 1 + z * 1)) / (3*n)) * 255}
+                        ${x * Math.abs(255 / n)},
+                        ${y * Math.abs(255 / n)},
+                        ${z * Math.abs(255 / n)}
                     ,1)`;
 
-                    this.RenderPoint(intercept.z,intercept.y,distance, color);                
+                    this.RenderPoint(intercept2.z,intercept2.y,distance2, color);    
+                    this.RenderLine(intercept1,intercept2,color);            
+            
                 }
             }
         }
-
-    }
-
-    rotateVertexInversely(vertex){
-
-        let alpha  = camera.horizontalAngle * (Math.PI / 180);
-        let beta   = camera.verticalAngle   * (Math.PI / 180);
-
-        let vAlpha = Math.atan(vertex.z / vertex.x);
-        let vBeta  = Math.atan(vertex.y / Math.hypot(vertex.x,vertex.z));
-
-        return new Vector3D(
-            vertex.length() * (Math.cos(vAlpha - alpha) * Math.cos(vBeta - beta)),
-            vertex.length() * (Math.sin(vBeta  -  beta)),
-            vertex.length() * (Math.sin(vAlpha - alpha) * Math.cos(vBeta - beta))
-        );
-
     }
 
     RenderPoint(x,y,distance, color){
@@ -72,15 +62,38 @@ class Render3D extends State {
         let midWidth  = this.#canvas?.width  / 2;
         let midHeight = this.#canvas?.height / 2;
         
-        let _x = midWidth  + (x * 230);
-        let _y = midHeight + (y * 230);
+        let _x = midWidth  + x * 3;
+        let _y = midHeight + y * 3;
 
         this.#context.fillStyle = color;
         this.#context.beginPath();
-        this.#context.arc(_x - 900,_y - 900, 1 * 10000 / (distance * distance), 0, 2 * Math.PI);
+        this.#context.arc(_x,_y, 50 / distance, 0, 2 * Math.PI);
         this.#context.fill();
         this.#context.closePath();
 
+    }
+
+    RenderLine(v1,v2,color){
+
+        let midWidth  = this.#canvas?.width  / 2;
+        let midHeight = this.#canvas?.height / 2;
+
+        let _x1 = midWidth  + v1.z * 3;
+        let _y1 = midHeight + v1.y * 3;
+
+        let _x2 = midWidth  + v2.z * 3;
+        let _y2 = midHeight + v2.y * 3;
+
+        console.log(_x1,_y1,_x2,_y2)
+
+        this.#context.strokeStyle = color;
+        this.#context.lineWidth = 1;
+
+        this.#context.beginPath();
+        this.#context.moveTo(_x1,_y1);
+        this.#context.lineTo(_x2,_y2);
+        this.#context.closePath();
+        this.#context.stroke();
     }
 
 }
